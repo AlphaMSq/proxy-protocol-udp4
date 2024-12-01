@@ -23,6 +23,7 @@ function changePort(buffer) {
 }
 
 function packetReceive(msg, rinfo, sendPort) {
+    console.log(msg, rinfo, sendPort);
     type = msg.toString('hex').substr(0, 2)
     if (rinfo.address !== serverip) {
         var portTime = new Date();
