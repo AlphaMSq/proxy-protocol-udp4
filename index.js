@@ -3,20 +3,32 @@ const { log } = require('./logger.js')
 const logger = new log()
 const { Buffer } = require('node:buffer');
 const replace = require('buffer-replace');
+const { encodeProxyProtocolV2UDP } = require('./utils/enchder.js');
 
 const server = dgram.createSocket('udp4');
 let ipArray = {};
 
-serverip = "65.21.175.138"
-serverPort = 19132
+let serverip = "65.21.175.138"
+let serverPort = 19132
 
-proxyip = "0.0.0.0"
-proxyPort = 19133
+let proxyip = "0.0.0.0"
+let proxyPort = 19133
 
 server.on('error', (err) => {
     logger.error(`server error:\n${err.stack}`);
     server.close();
 });
+
+/**
+ * 
+ * @param {Buffer} buffer 
+ * @param {dgram.RemoteInfo} rinfo 
+ * @returns 
+ */
+const addProxyHeader = (buffer, rinfo) => {
+    const proxyHeader = encodeProxyProtocolV2UDP(rinfo.address, rinfo.port, serverip, serverPort);
+    return Buffer.concat([proxyHeader, buffer]);
+}
 
 function changePort(buffer) {
     return replace(buffer, serverPort, proxyPort)
@@ -43,7 +55,7 @@ function packetReceive(msg, rinfo, sendPort) {
     }
     if (rinfo.address !== serverip) {
         logger.info(`0x${type} packet received from client: ${rinfo.address}`)
-        ipArray[rinfo.port].socket.send(msg, 0, msg.length, serverPort,
+        ipArray[rinfo.port].socket.send(addProxyHeader(msg), 0, msg.length, serverPort,
             serverip);
     }
 
