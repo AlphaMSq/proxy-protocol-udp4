@@ -82,7 +82,8 @@ function packetReceive(msg, rinfo, sendPort) {
             delete ipArray[sendPort];
         }
         else {
-            server.send(changePort(msg), 0, msg.length, ipArray[sendPort]['port'], ipArray[sendPort]['ip']);
+            console.log(msg, 0, msg.length, ipArray[sendPort]['port'], ipArray[sendPort]['ip'])
+            server.send(msg, 0, msg.length, ipArray[sendPort]['port'], ipArray[sendPort]['ip']);
         }
     }
 }
