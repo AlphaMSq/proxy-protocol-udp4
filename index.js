@@ -7,7 +7,7 @@ const replace = require('buffer-replace');
 const server = dgram.createSocket('udp4');
 let ipArray = {};
 
-serverip = "0.0.0.0"
+serverip = "65.21.175.138"
 serverPort = 19132
 
 proxyip = "0.0.0.0"

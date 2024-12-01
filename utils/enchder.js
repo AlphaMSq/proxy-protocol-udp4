@@ -37,6 +37,4 @@ function encodeProxyProtocolV2UDP(srcAddr, srcPort, dstAddr, dstPort) {
     return header;
 }
 
-// Пример использования
-const proxyHeader = encodeProxyProtocolV2UDP('192.168.1.1', 12345, '192.168.1.2', 80);
-console.log(proxyHeader.toString('hex'));
+module.exports = { encodeProxyProtocolV2UDP };
