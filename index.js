@@ -46,14 +46,13 @@ function packetReceive(msg, rinfo, sendPort) {
     if (rinfo.address !== serverip) {
         var portTime = new Date();
         if (typeof (ipArray[rinfo.port]) === 'undefined') {
-            logger.info(`Creating new socket for client: ${rinfo.address}:${rinfo.port}`);
             ipArray[rinfo.port] = {
                 'port': rinfo.port, 'ip': rinfo.address,
                 'time': portTime.getTime(), 'socket': dgram.createSocket("udp4")
             };
             ipArray[rinfo.port].socket.bind(rinfo.port);
             ipArray[rinfo.port].socket.on("message", function (msgg, rinfoo) {
-                logger.info(`Response from server: ${msgg.toString('hex')}, size: ${msgg.length}`);
+                console.log('\x1b[33mResponse from server:\x1b[0m ', msgg, rinfoo, ipArray[rinfo.port]['port'])
                 packetReceive(msgg, rinfoo, ipArray[rinfo.port]['port']);
             });
             ipArray[rinfo.port].socket.on("close", () => {
@@ -61,7 +60,6 @@ function packetReceive(msg, rinfo, sendPort) {
             })
         }
         else {
-            logger.info(`Updating timestamp for client: ${rinfo.address}:${rinfo.port}`);
             ipArray[rinfo.port]['time'] = portTime.getTime();
         }
     }
@@ -69,13 +67,8 @@ function packetReceive(msg, rinfo, sendPort) {
         logger.info(`0x${type} packet received from client: ${rinfo.address}`)
         const messageWithHeader = addProxyHeader(msg, rinfo);
 
-        ipArray[rinfo.port].socket.send(messageWithHeader, 0, messageWithHeader.length, serverPort, serverip, (err) => {
-            if (err) {
-                logger.error(`Error sending packet to ${serverip}:${serverPort} - ${err.message}`);
-            } else {
-                logger.info(`Packet sent to ${serverip}:${serverPort}, size: ${messageWithHeader.length}`);
-            }
-        });
+        ipArray[rinfo.port].socket.send(messageWithHeader, 0, messageWithHeader.length, serverPort,
+            serverip);
     }
 
     else if (rinfo.port == serverPort) {
@@ -94,8 +87,7 @@ function packetReceive(msg, rinfo, sendPort) {
 }
 
 server.on('message', (msg, info) => {
-    logger.info(`Message received from ${info.address}:${info.port}, size: ${msg.length}`);
-    packetReceive(msg, info, info.port);
+    packetReceive(msg, info, info.port)
 });
 
 server.on('listening', () => {
