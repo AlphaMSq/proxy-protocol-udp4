@@ -54,11 +54,8 @@ const addProxyHeader = (buffer, rinfo) => {
     return Buffer.concat([proxyHeader, buffer]);
 }
 
-function changePort(buffer) {
-    return replace(buffer, serverPort, proxyPort)
-}
-
 function packetReceive(msg, rinfo, sendPort) {
+    console.log(sendPort, rinfo.port)
     type = msg.toString('hex').substr(0, 2)
     if (rinfo.address !== serverip) {
         var portTime = new Date();
