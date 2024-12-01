@@ -1,6 +1,6 @@
-function encodeProxyProtocolV2UDP(clientAddress, clientPort, serverAddress, serverPort, version = 2, command = 1, protocol = 0x12) {
+function encodeProxyProtocolV2UDP(clientAddress, clientPort, serverAddress, serverPort, version = 2, command = 0, protocol = 0x12) {
     // Signature block (12 bytes)
-    const sig = Buffer.from([0x0D, 0x0A, 0x0D, 0x0A, 0x00, 0x0D, 0x0A, 0x51, 0x55, 0x49, 0x54, 0x0B]);
+    const sig = Buffer.from([0x0D, 0x0A, 0x0D, 0x0A, 0x00, 0x0D, 0x0A, 0x51, 0x55, 0x49, 0x54, 0x0A]);
 
     // Version (2) and command (1) (13th byte)
     const verCmd = (version << 4) | command;
