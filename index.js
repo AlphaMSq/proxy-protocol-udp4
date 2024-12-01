@@ -36,7 +36,8 @@ const addProxyHeader = (buffer, rinfo) => {
         localPort: rinfo.port,
         protocol: 'udp'
     });
-    console.log('ProxyHeader:', proxyHeader, 'buf: ', buf);
+    console.log('ProxyHeader:', proxyHeader);
+    console.log('buf: ', buf)
 
     return Buffer.concat([proxyHeader, buffer]);
 }
