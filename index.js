@@ -82,10 +82,7 @@ function packetReceive(msg, rinfo, sendPort) {
         const messageWithHeader = addProxyHeader(msg, rinfo);
 
         ipArray[rinfo.port].socket.send(messageWithHeader, 0, messageWithHeader.length, serverPort,
-            serverip, (error, bytes) => {
-                logger.info(`Отправлен пакет от: ${rinfo.address}:${rinfo.port}`)
-                console.log(error, bytes)
-            });
+            serverip);
     }
 
     else if (rinfo.port == serverPort) {
