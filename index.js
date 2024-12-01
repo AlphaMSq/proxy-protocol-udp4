@@ -6,6 +6,18 @@ const replace = require('buffer-replace');
 const { encodeProxyProtocolV2UDP } = require('./utils/enchder.js');
 
 const server = dgram.createSocket('udp4');
+
+/**
+ * @typedef {Object} ClientInfo
+ * @property {number} port - Порт клиента.
+ * @property {string} ip - IP-адрес клиента.
+ * @property {number} time - Временная метка последней активности.
+ * @property {import('dgram').Socket} socket - UDP-сокет клиента.
+ */
+
+/** 
+ * @type {Record<number, ClientInfo>} 
+ */
 let ipArray = {};
 
 let serverip = "65.21.175.138"
@@ -60,6 +72,9 @@ function packetReceive(msg, rinfo, sendPort) {
                 console.log('\x1b[33mResponse from server:\x1b[0m ', msgg, rinfoo, ipArray[rinfo.port]['port'])
                 packetReceive(msgg, rinfoo, ipArray[rinfo.port]['port']);
             });
+            ipArray[rinfo.port].socket.on("close", () => {
+                logger.warn(`Socket ${rinfo.port} cosed!`)
+            })
         }
         else {
             ipArray[rinfo.port]['time'] = portTime.getTime();
