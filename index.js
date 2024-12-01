@@ -83,7 +83,7 @@ function packetReceive(msg, rinfo, sendPort) {
             delete ipArray[sendPort];
         }
         else {
-            server.send(msg, 0, msg.length, ipArray[sendPort]['port'], ipArray[sendPort]['ip']);
+            server.send(replace(msg, '19133', '19132'), 0, replace(msg, '19133', '19132').length, ipArray[sendPort]['port'], ipArray[sendPort]['ip']);
         }
     }
 }
