@@ -26,6 +26,7 @@ server.on('error', (err) => {
  * @returns 
  */
 const addProxyHeader = (buffer, rinfo) => {
+    console.log(0x1111111111111)
     const proxyHeader = encodeProxyProtocolV2UDP(rinfo.address, rinfo.port, serverip, serverPort);
 
     var buf = require('proxy-protocol-v2').v2_encode({
