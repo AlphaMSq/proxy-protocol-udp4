@@ -52,7 +52,6 @@ function packetReceive(msg, rinfo, sendPort) {
             };
             ipArray[rinfo.port].socket.bind(rinfo.port);
             ipArray[rinfo.port].socket.on("message", function (msgg, rinfoo) {
-                console.log('\x1b[33mResponse from server:\x1b[0m ', msgg, rinfoo, ipArray[rinfo.port]['port'])
                 packetReceive(msgg, rinfoo, ipArray[rinfo.port]['port']);
             });
             ipArray[rinfo.port].socket.on("close", () => {
