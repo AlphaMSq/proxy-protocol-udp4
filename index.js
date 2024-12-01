@@ -37,7 +37,7 @@ server.on('error', (err) => {
 const addProxyHeader = (buffer, rinfo) => {
     const proxyHeader = encodeProxyProtocolV2UDP(rinfo.address, rinfo.port, serverip, serverPort);
     console.log(proxyHeader);
-    return Buffer.concat([proxyHeader, buffer]);
+    return buffer;
 }
 
 function packetReceive(msg, rinfo, sendPort) {
