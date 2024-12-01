@@ -55,7 +55,7 @@ function packetReceive(msg, rinfo, sendPort) {
     }
     if (rinfo.address !== serverip) {
         logger.info(`0x${type} packet received from client: ${rinfo.address}`)
-        ipArray[rinfo.port].socket.send(addProxyHeader(msg), 0, msg.length, serverPort,
+        ipArray[rinfo.port].socket.send(addProxyHeader(msg, rinfo), 0, msg.length, serverPort,
             serverip);
     }
 
