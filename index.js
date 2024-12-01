@@ -32,7 +32,7 @@ const addProxyHeader = (buffer, rinfo) => {
         remoteFamily: 'IPv4',
         remoteAddress: serverip,
         remotePort: serverPort,
-        localAddress: rinfo.addres,
+        localAddress: rinfo.address,
         localPort: rinfo.port,
         protocol: 'udp'
     })
