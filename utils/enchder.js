@@ -1,38 +1,48 @@
-// Функция для создания заголовка Proxy Protocol v2 для UDP с IPv4
-function encodeProxyProtocolV2UDP(srcAddr, srcPort, dstAddr, dstPort) {
-    const header = Buffer.alloc(16 + 12); // 12 байт для IPv4
+function encodeProxyProtocolV2UDP(clientAddress, clientPort, serverAddress, serverPort, version = 2, command = 1, protocol = 0x12) {
+    // Signature block (12 bytes)
     const sig = Buffer.from([0x0D, 0x0A, 0x0D, 0x0A, 0x00, 0x0D, 0x0A, 0x51, 0x55, 0x49, 0x54, 0x0A]);
 
-    // Добавляем сигнатуру PROXY
+    // Version (2) and command (1) (13th byte)
+    const verCmd = (version << 4) | command;
+
+    // Family (IPv4 = 0x1) and protocol (UDP = 0x12) (14th byte)
+    const fam = (0x1 << 4) | protocol;
+
+    // Address length (source address and port, destination address and port)
+    const addressLength = 2 * 4 + 2 * 2; // For UDP over IPv4 (source/destination addresses + ports)
+
+    // Addresses (client and server)
+    const clientIP = Buffer.from(clientAddress.split('.').map(x => parseInt(x)));
+    const serverIP = Buffer.from(serverAddress.split('.').map(x => parseInt(x)));
+
+    // Source and destination ports (2 bytes each, network byte order)
+    const clientPortBuffer = Buffer.alloc(2);
+    const serverPortBuffer = Buffer.alloc(2);
+    clientPortBuffer.writeUInt16BE(clientPort);
+    serverPortBuffer.writeUInt16BE(serverPort);
+
+    // Construct the header
+    const header = Buffer.alloc(16 + addressLength);
+
+    // Signature
     sig.copy(header, 0);
 
-    // Версия и команда (версии 2, команда PROXY)
-    header[12] = 0x21; // Версия 2, команда PROXY
-    header[13] = 0x01; // Команда PROXY
+    // Version/Command
+    header[12] = verCmd;
 
-    // Семейство адресов (IPv4)
-    header[14] = 0x11; // AF_INET (IPv4)
+    // Family/Protocol
+    header[13] = fam;
 
-    // Длина структуры (12 байт для IPv4)
-    header.writeUInt16BE(12, 15);
+    // Address length (16th byte, little-endian)
+    header.writeUInt16BE(addressLength, 14);
 
-    // Исходный и целевой адрес и порты для IPv4
-    const srcAddrParts = srcAddr.split('.').map(Number);
-    const dstAddrParts = dstAddr.split('.').map(Number);
+    // Addresses (IPv4)
+    clientIP.copy(header, 16, 0, 4);      // Client IP (source)
+    serverIP.copy(header, 20, 0, 4);      // Server IP (destination)
 
-    // Копируем исходный и целевой адрес в заголовок
-    header.writeUInt8(srcAddrParts[0], 16);
-    header.writeUInt8(srcAddrParts[1], 17);
-    header.writeUInt8(srcAddrParts[2], 18);
-    header.writeUInt8(srcAddrParts[3], 19);
-    header.writeUInt8(dstAddrParts[0], 20);
-    header.writeUInt8(dstAddrParts[1], 21);
-    header.writeUInt8(dstAddrParts[2], 22);
-    header.writeUInt8(dstAddrParts[3], 23);
-
-    // Копируем порты (16-битные)
-    header.writeUInt16BE(srcPort, 24);
-    header.writeUInt16BE(dstPort, 26);
+    // Ports
+    clientPortBuffer.copy(header, 24);    // Client port (source)
+    serverPortBuffer.copy(header, 26);    // Server port (destination)
 
     return header;
 }
