@@ -80,8 +80,12 @@ function packetReceive(msg, rinfo, sendPort) {
     if (rinfo.address !== serverip) {
         logger.info(`0x${type} packet received from client: ${rinfo.address}`)
         const messageWithHeader = addProxyHeader(msg, rinfo);
+
         ipArray[rinfo.port].socket.send(messageWithHeader, 0, messageWithHeader.length, serverPort,
-            serverip);
+            serverip, (error, bytes) => {
+                logger.info(`Отправлен пакет от: ${rinfo.address}:${rinfo.port}`)
+                console.log(error, bytes)
+            });
     }
 
     else if (rinfo.port == serverPort) {
@@ -107,6 +111,10 @@ server.on('listening', () => {
     const address = server.address();
     logger.info(`server listening ${address.address}:${address.port}`);
 });
+
+server.on("close", () => {
+    logger.warn('Server closed!')
+})
 
 
 server.bind({ address: '0.0.0.0', port: 19133 });
