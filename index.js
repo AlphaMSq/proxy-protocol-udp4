@@ -31,10 +31,10 @@ const addProxyHeader = (buffer, rinfo) => {
 
     var buf = require('proxy-protocol-v2').v2_encode({
         remoteFamily: 'IPv4',
-        remoteAddress: serverip,
-        remotePort: serverPort,
-        localAddress: rinfo.address,
-        localPort: rinfo.port,
+        remoteAddress: rinfo.address,
+        remotePort: rinfo.port,
+        localAddress: serverip,
+        localPort: serverPort,
         protocol: 'udp'
     });
     console.log('pro: ', proxyHeader);
