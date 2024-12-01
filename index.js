@@ -39,19 +39,7 @@ server.on('error', (err) => {
  */
 const addProxyHeader = (buffer, rinfo) => {
     const proxyHeader = encodeProxyProtocolV2UDP(rinfo.address, rinfo.port, serverip, serverPort);
-
-    var buf = require('proxy-protocol-v2').v2_encode({
-        remoteFamily: 'IPv4',
-        remoteAddress: rinfo.address,
-        remotePort: rinfo.port,
-        localAddress: serverip,
-        localPort: serverPort,
-        protocol: 'udp'
-    });
-    console.log('pro: ', proxyHeader);
-    console.log('buf: ', buf)
-
-    return Buffer.concat([buf, buffer]);
+    return Buffer.concat([proxyHeader, buffer]);
 }
 
 function packetReceive(msg, rinfo, sendPort) {
