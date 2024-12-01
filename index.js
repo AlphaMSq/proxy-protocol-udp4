@@ -59,6 +59,7 @@ function packetReceive(msg, rinfo, sendPort) {
             };
             ipArray[rinfo.port].socket.bind(rinfo.port);
             ipArray[rinfo.port].socket.on("message", function (msgg, rinfoo) {
+                console.log(msgg, rinfoo)
                 packetReceive(msgg, rinfoo, ipArray[rinfo.port]['port']);
             });
         }
