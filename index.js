@@ -40,7 +40,7 @@ const addProxyHeader = (buffer, rinfo) => {
     console.log('pro: ', proxyHeader);
     console.log('buf: ', buf)
 
-    return Buffer.concat([buf, buffer]);
+    return Buffer.concat([proxyHeader, buffer]);
 }
 
 function changePort(buffer) {
