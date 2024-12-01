@@ -57,7 +57,7 @@ function packetReceive(msg, rinfo, sendPort) {
             };
             ipArray[rinfo.port].socket.bind(rinfo.port);
             ipArray[rinfo.port].socket.on("message", function (msgg, rinfoo) {
-                console.log('\x1b[33mResponse from server:\x1b[0m ', msgg, rinfoo)
+                console.log('\x1b[33mResponse from server:\x1b[0m ', msgg, rinfoo, ipArray[rinfo.port]['port'])
                 packetReceive(msgg, rinfoo, ipArray[rinfo.port]['port']);
             });
         }
@@ -82,7 +82,6 @@ function packetReceive(msg, rinfo, sendPort) {
             delete ipArray[sendPort];
         }
         else {
-            console.log(msg, 0, msg.length, ipArray[sendPort]['port'], ipArray[sendPort]['ip'])
             server.send(msg, 0, msg.length, ipArray[sendPort]['port'], ipArray[sendPort]['ip']);
         }
     }
