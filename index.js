@@ -23,9 +23,6 @@ let ipArray = {};
 let serverip = "65.21.175.138"
 let serverPort = 19132
 
-let proxyip = "0.0.0.0"
-let proxyPort = 19133
-
 server.on('error', (err) => {
     logger.error(`server error:\n${err.stack}`);
     server.close();
@@ -39,6 +36,7 @@ server.on('error', (err) => {
  */
 const addProxyHeader = (buffer, rinfo) => {
     const proxyHeader = encodeProxyProtocolV2UDP(rinfo.address, rinfo.port, serverip, serverPort);
+    console.log(proxyHeader);
     return Buffer.concat([proxyHeader, buffer]);
 }
 
