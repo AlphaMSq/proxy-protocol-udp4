@@ -28,6 +28,14 @@ server.on('error', (err) => {
 const addProxyHeader = (buffer, rinfo) => {
     const proxyHeader = encodeProxyProtocolV2UDP(rinfo.address, rinfo.port, serverip, serverPort);
 
+    console.log({
+        remoteFamily: 'IPv4',
+        remoteAddress: serverip,
+        remotePort: serverPort,
+        localAddress: rinfo.addres,
+        localPort: rinfo.port,
+        protocol: 'udp'
+    })
     var buf = require('proxy-protocol-v2').v2_encode({
         remoteFamily: 'IPv4',
         remoteAddress: serverip,
