@@ -63,10 +63,16 @@ function packetReceive(msg, rinfo, sendPort) {
     }
     if (rinfo.address !== serverip) {
         logger.info(`0x${type} packet received from client: ${rinfo.address}`)
-        const messageWithHeader = addProxyHeader(msg, rinfo);
 
-        ipArray[rinfo.port].socket.send(messageWithHeader, 0, messageWithHeader.length, serverPort,
-            serverip);
+        if (type == '0x01' || type == '0x05') {
+            const messageWithHeader = addProxyHeader(msg, rinfo);
+
+            ipArray[rinfo.port].socket.send(messageWithHeader, 0, messageWithHeader.length, serverPort,
+                serverip);
+        } else {
+            ipArray[rinfo.port].socket.send(msg, 0, msg.length, serverPort,
+                serverip);
+        }
     }
 
     else if (rinfo.port == serverPort) {
