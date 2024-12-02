@@ -65,6 +65,7 @@ function packetReceive(msg, rinfo, sendPort) {
     if (rinfo.address !== serverip) {
         logger.info(`0x${type} packet received from client: ${rinfo.address}`)
 
+        console.log(type.indexOf('0x01') != -1, type.indexOf('0x05') != -1, ipArray[rinfo.port].headerSent == false)
         if (ipArray[rinfo.port].headerSent == false && (type.indexOf('0x01') != -1 || type.indexOf('0x05') != -1)) {
             logger.warn('Send with header!');
             const messageWithHeader = addProxyHeader(msg, rinfo);
