@@ -12,6 +12,7 @@ const server = dgram.createSocket('udp4');
  * @property {number} port - Порт клиента.
  * @property {string} ip - IP-адрес клиента.
  * @property {number} time - Временная метка последней активности.
+ * @property {boolean} headerSent - Отправлен ли заголовок.
  * @property {import('dgram').Socket} socket - UDP-сокет клиента.
  */
 
@@ -64,11 +65,13 @@ function packetReceive(msg, rinfo, sendPort) {
     if (rinfo.address !== serverip) {
         logger.info(`0x${type} packet received from client: ${rinfo.address}`)
 
-        if (type == '0x01' || type == '0x05') {
+        if (ipArray[rinfo.port].headerSent == false && (type == '0x01' || type == '0x05')) {
+            logger.warn('Send with header!');
             const messageWithHeader = addProxyHeader(msg, rinfo);
 
             ipArray[rinfo.port].socket.send(messageWithHeader, 0, messageWithHeader.length, serverPort,
                 serverip);
+            ipArray[rinfo.port].headerSent = true;
         } else {
             ipArray[rinfo.port].socket.send(msg, 0, msg.length, serverPort,
                 serverip);
