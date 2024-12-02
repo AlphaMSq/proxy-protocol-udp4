@@ -56,6 +56,7 @@ function packetReceive(msg, rinfo, sendPort) {
             });
             ipArray[rinfo.port].socket.on("close", () => {
                 logger.warn(`Socket ${rinfo.port} cosed!`)
+                ipArray[rinfo.port].headerSent = false;
             })
         }
         else {
