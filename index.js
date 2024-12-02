@@ -22,7 +22,7 @@ const server = dgram.createSocket('udp4');
 let ipArray = {};
 
 let serverip = "65.21.175.138"
-let serverPort = 19132
+let serverPort = 10004
 
 server.on('error', (err) => {
     logger.error(`server error:\n${err.stack}`);
@@ -88,7 +88,7 @@ function packetReceive(msg, rinfo, sendPort) {
             delete ipArray[sendPort];
         }
         else {
-            server.send(replace(msg, '19132', '19133'), 0, replace(msg, '19132', '19133').length, ipArray[sendPort]['port'], ipArray[sendPort]['ip']);
+            server.send(replace(msg, '10004', '19132'), 0, replace(msg, '10004', '19132').length, ipArray[sendPort]['port'], ipArray[sendPort]['ip']);
         }
     }
 }
@@ -107,4 +107,4 @@ server.on("close", () => {
 })
 
 
-server.bind({ address: '0.0.0.0', port: 19133 });
+server.bind({ address: '0.0.0.0', port: 19132 });

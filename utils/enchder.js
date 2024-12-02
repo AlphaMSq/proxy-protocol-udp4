@@ -1,48 +1,44 @@
 function encodeProxyProtocolV2UDP(clientAddress, clientPort, serverAddress, serverPort, version = 2, command = 1, protocol = 0x12) {
-    // Signature block (12 bytes)
-    const sig = Buffer.from([0x0D, 0x0A, 0x0D, 0x0A, 0x00, 0x0D, 0x0A, 0x51, 0x55, 0x49, 0x54, 0x0A]);
+    if (!clientAddress || !serverAddress || !clientPort || !serverPort) {
+        throw new Error("Invalid data.");
+    }
 
-    // Version (2) and command (1) (13th byte)
-    const verCmd = (version << 4) | command;
+    // Proxy Protocol V2 signature
+    const signatureBytes = Buffer.from([
+        0x0D, 0x0A, 0x0D, 0x0A,
+        0x00, 0x0D, 0x0A, 0x51,
+        0x55, 0x49, 0x54, 0x0A
+    ]);
 
-    // Family (IPv4 = 0x1) and protocol (UDP = 0x12) (14th byte)
-    const fam = (0x1 << 4) | protocol;
+    // Version and command byte (4 high bits = version, 4 low bits = command)
+    const verAndCmdByte = (version << 4) | command;
 
-    // Address length (source address and port, destination address and port)
-    const addressLength = 2 * 4 + 2 * 2; // For UDP over IPv4 (source/destination addresses + ports)
+    // Family and protocol byte (4 high bits = family, 4 low bits = protocol)
+    const famAndProtByte = (0x1 << 4) | protocol; // IPv4 + UDP
 
-    // Addresses (client and server)
-    const clientIP = Buffer.from(clientAddress.split('.').map(x => parseInt(x)));
-    const serverIP = Buffer.from(serverAddress.split('.').map(x => parseInt(x)));
+    // Address length for IPv4/UDP
+    const addressLength = 12; // 4 bytes (source IP) + 4 bytes (destination IP) + 2 bytes (source port) + 2 bytes (destination port)
 
-    // Source and destination ports (2 bytes each, network byte order)
+    // Convert IP addresses and ports to buffers
+    const clientIPBytes = Buffer.from(clientAddress.split('.').map(Number));
+    const serverIPBytes = Buffer.from(serverAddress.split('.').map(Number));
     const clientPortBuffer = Buffer.alloc(2);
     const serverPortBuffer = Buffer.alloc(2);
     clientPortBuffer.writeUInt16BE(clientPort);
     serverPortBuffer.writeUInt16BE(serverPort);
 
-    // Construct the header
+    // Create the full header buffer
     const header = Buffer.alloc(16 + addressLength);
 
-    // Signature
-    sig.copy(header, 0);
-
-    // Version/Command
-    header[12] = verCmd;
-
-    // Family/Protocol
-    header[13] = fam;
-
-    // Address length (16th byte, little-endian)
-    header.writeUInt16BE(addressLength, 14);
-
-    // Addresses (IPv4)
-    clientIP.copy(header, 16, 0, 4);      // Client IP (source)
-    serverIP.copy(header, 20, 0, 4);      // Server IP (destination)
-
-    // Ports
-    clientPortBuffer.copy(header, 24);    // Client port (source)
-    serverPortBuffer.copy(header, 26);    // Server port (destination)
+    // Fill header
+    signatureBytes.copy(header, 0); // Signature
+    header[12] = verAndCmdByte;     // Version and command
+    header[13] = famAndProtByte;    // Family and protocol
+    header.writeUInt16BE(addressLength, 14); // Address length
+    clientIPBytes.copy(header, 16); // Source IP
+    serverIPBytes.copy(header, 20); // Destination IP
+    clientPortBuffer.copy(header, 24); // Source port
+    serverPortBuffer.copy(header, 26); // Destination port
 
     return header;
 }
