@@ -21,8 +21,8 @@ const server = dgram.createSocket('udp4');
  */
 let ipArray = {};
 
-let serverip = "65.21.175.138"
-let serverPort = 10004
+let serverip = "65.21.175.137"
+let serverPort = 20005
 
 server.on('error', (err) => {
     logger.error(`server error:\n${err.stack}`);
